@@ -1,0 +1,699 @@
+
+load_file("noload.hoc")
+//load_file("nrngui.hoc") for test purposes
+
+strdef folder_name
+
+folder_name="/home/alexandrapierri/c_0.01_full_network_1875_spiketimes_matlab_hoc_dat_python_sh_files" 
+
+dist=1
+rel=0.1
+
+numaxon=1
+numsoma=1 // number of compartments in each area
+numbasal=74
+numapical=42
+numtrunk=37// part of migliore code denotes the nimber of comp
+
+xopen("ri06.hoc")           // geometry file
+xopen("fixnseg.hoc")       //related to the geometry of the cell
+
+Rm = 20000 // membrsne resistance
+RmDend = Rm/1 //same
+RmSoma = Rm
+RmAx = Rm
+
+Cm    = 1.9 //membrane capacitance
+CmSoma= Cm
+CmAx  = Cm
+CmDend = Cm*1
+
+RaAll= 80 //axonal resistance
+RaSoma=80  
+RaAx = 50
+
+Vrest = -70 
+dt = 0.01
+celsius = 35.0  //temperature of the model  
+
+forsec "axon" {insert pas e_pas=Vrest g_pas = 1/RmAx Ra=RaAx cm=CmAx}// creating the segments of the compartments
+forsec "soma" {insert pas e_pas=Vrest g_pas = 1/RmSoma Ra=RaSoma cm=CmSoma}
+forsec "dend" {insert pas e_pas=Vrest g_pas = 1/RmDend Ra=RaAll cm=CmDend}
+forsec "dend_5" {insert pas e_pas=Vrest g_pas = 1/RmDend Ra=RaAll cm=CmDend}
+forsec "apic" {insert pas e_pas=Vrest g_pas = 1/RmDend Ra=RaAll cm=CmDend}
+
+
+//Calculate Passive currents //added on March 10th 2016 to calculate the return currents of the model
+//IPas = g_pas*(v - e_pas)
+
+
+access soma  //record from the soma
+
+freq=100 // prob don need
+geom_nseg() // neuron stuff has for seg geometry 
+
+tstim=1  // time of simulation in case I do a current clamp
+strength = 1 /*namps*/ //same
+tstop=5000
+
+
+////////////////////////////////////////////////////////////////////////////// 
+//////// load presyn spike times for inhibitory cells
+
+
+objref f_pv, f_som, f_bsc, f_exc, eventvec_pv, eventvec_som, eventvec_bsc, eventvec_exc, presyn_pv, presyn_som, presyn_bsc, presyn_exc
+
+eventvec_pv=new Vector()
+eventvec_bsc=new Vector()
+eventvec_som=new Vector()
+eventvec_exc=new Vector()
+f_pv=new File()
+f_bsc=new File()
+f_som=new File()
+f_exc=new File()
+presyn_pv=new List()
+presyn_bsc=new List()
+presyn_som=new List()
+presyn_exc=new List()
+
+
+///file info
+pv_dSD=6.6 //
+pv_gnSD=0.21
+som_dSD=3.5
+som_gnSD=0.12
+som_shift=5.32
+EPSC_mult=0
+gpv=3.0
+
+//gsb=$1
+//gsb=float(gsb_str)
+//gsb=0.5 //0.4
+//csb=0.27 //0.06
+//gbs=1.75
+cbs=0.64*csb
+
+////BC
+strdef filename
+// parameters aren't always saved with the same number of digits.  Have to read in correct value...
+if (gsb==0 || gsb%0.5==0) {
+	if (gbs==0 || gbs%0.5==0) {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	} else {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	}
+} else {
+	if (gbs==0 || gbs%0.5==0) {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	} else {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BC-380-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv-%.1f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	}
+}
+
+f_pv.ropen(filename)
+tot_num_pv_spks=f_pv.scanvar() 
+num_presyn_pv_cells=f_pv.scanvar()
+
+//scan file and create vector of spiketimes
+for i=0,num_presyn_pv_cells-1{
+	eventvec_pv.resize(0)
+	num_pv_spks=f_pv.scanvar()	
+	for j=1,num_pv_spks{
+		eventvec_pv.append(f_pv.scanvar()*1000)
+	}
+	presyn_pv.append(new VecStim())
+	presyn_pv.o(i).play(eventvec_pv)
+}
+
+f_pv.close()
+
+////BSC 
+
+strdef filename
+// parameters aren't always saved with the same number of digits.  Have to read in correct value...
+if (gsb==0 || gsb%0.5==0) {
+	if (gbs==0 || gbs%0.5==0) {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	} else {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	}
+} else {
+	if (gbs==0 || gbs%0.5==0) {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	} else {
+		if (cbs==0.16) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.2f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.3f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/BSC-120-gi-0-gi_SD-0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.4f-spiketimes.txt",folder_name,pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)	
+		}
+	}
+}
+
+f_bsc.ropen(filename)
+tot_num_bsc_spks=f_bsc.scanvar() 
+num_presyn_bsc_cells=f_bsc.scanvar()
+
+//scan file and create vector of spiketimes
+for i=0,num_presyn_bsc_cells-1{
+	eventvec_bsc.resize(0)
+	num_bsc_spks=f_bsc.scanvar()	
+	for j=1,num_bsc_spks{
+		eventvec_bsc.append(f_bsc.scanvar()*1000)
+	}
+	presyn_bsc.append(new VecStim())
+	presyn_bsc.o(i).play(eventvec_bsc)
+}
+
+f_bsc.close()
+
+//////SOM
+
+strdef filename
+
+// parameters aren't always saved with the same number of digits.  Have to read in correct value...
+if (gsb==0 || gsb%0.5==0) {
+	if (gbs==0 || gbs%0.5==0) {
+		if (cbs==0.16) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.3f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.4f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		}
+	} else {
+		if (cbs==0.16) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.2f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.3f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.1f-csb%.2f-gbs%.2f-cbs%.4f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		}
+	}
+} else {
+	if (gbs==0 || gbs%0.5==0) {
+		if (cbs==0.16) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.2f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.3f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.2f-csb%.2f-gbs%.1f-cbs%.4f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		}
+	} else {
+		if (cbs==0.16) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.2f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else if (cbs==0.096 || cbs==0.032) {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.3f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)
+		} else {
+			sprint(filename,"%s/SOM-350-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f-gsb%.2f-csb%.2f-gbs%.2f-cbs%.4f-spiketimes.txt",folder_name,som_dSD,som_shift,som_gnSD,gsb,csb,gbs,cbs)	
+		}
+	}
+}
+
+f_som.ropen(filename)
+tot_num_som_spks=f_som.scanvar() 
+num_presyn_som_cells=f_som.scanvar()
+
+//scan file and create vector of spiketimes
+for i=0,num_presyn_som_cells-1{
+	eventvec_som.resize(0)
+	num_som_spks=f_som.scanvar()	
+	for j=1,num_som_spks{
+		eventvec_som.append(f_som.scanvar()*1000)
+	}
+	presyn_som.append(new VecStim())
+	presyn_som.o(i).play(eventvec_som)
+}
+
+f_som.close()
+
+////EXC
+
+strdef filename
+sprint(filename,"EXC-197-gi-0-gi_SD-0-PV12913020-dSD6.6ms-gnSD0.21-gpv3.0-gsb0.5-csb0.21-gbs1.75-cbs0.1344-spiketimes.txt",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+f_exc.ropen(filename)
+tot_num_exc_spks=f_exc.scanvar() 
+num_presyn_exc_cells=f_exc.scanvar()
+
+//scan file and create vector of spiketimes
+for i=0,num_presyn_exc_cells-1{
+	eventvec_exc.resize(0)
+	num_exc_spks=f_exc.scanvar()	
+	for j=1,num_exc_spks{
+		eventvec_exc.append(f_exc.scanvar()*1000)
+	}
+	presyn_exc.append(new VecStim())
+	presyn_exc.o(i).play(eventvec_bsc)
+}
+
+f_exc.close()
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+////// import list of possible synaptic sites for each type (perisom, distal, prox) --- ADDED BASAL EXC
+
+ 
+objref f_perisom_dend5, f_perisom_dend, f_perisom_soma //for BC 
+objref f_distal_dend5   //for SOM
+objref f_rad_apic, f_rad_dend5, f_oriens_dend //for BSC 
+objref f_oriens_dend_exc //for EXC
+objref loc_ind_perisom_mat,loc_ind_distal_mat, loc_ind_prox_mat, loc_ind_exc_mat
+
+///for perisomatic syn
+f_perisom_dend5=new File() 
+f_perisom_dend=new File()   
+f_perisom_soma=new File()
+
+
+//for distal syn
+f_distal_dend5=new File()  
+ 
+//for rad and oriens syn
+f_rad_apic=new File()
+f_rad_dend5=new File()
+f_oriens_dend=new File()
+f_oriens_dend_exc=new File()
+
+///////distal dend syn
+strdef dend5_dist475 
+sprint(dend5_dist475,"%s/mig12_dend5_dist475_Ldiv12seg_ind.dat",folder_name)
+f_distal_dend5.ropen(dend5_dist475)    //("mig12_dend5_dist475_Ldiv12seg_ind.dat")
+ind_size_distal_dend5=f_distal_dend5.scanvar()  
+f_distal_dend5.scanvar()
+tot_ind_distal_size=ind_size_distal_dend5   ///for dist dend syn
+loc_ind_distal_mat=new Matrix(tot_ind_distal_size,2)
+
+/////////perisomatic syn
+strdef dend5_somatic30, dend_somatic30, soma_somatic30
+sprint(dend5_somatic30,"%s/mig12_dend5_somatic30_Ldiv12seg_ind.dat",folder_name)
+sprint(dend_somatic30,"%s/mig12_dend_somatic30_Ldiv12seg_ind.dat",folder_name)
+sprint(soma_somatic30,"%s/mig12_soma_somatic30_Ldiv12seg_ind.dat",folder_name)
+f_perisom_dend5.ropen(dend5_somatic30)              //("mig12_dend5_somatic30_Ldiv12seg_ind.dat")
+f_perisom_dend.ropen(dend_somatic30)               //("mig12_dend_somatic30_Ldiv12seg_ind.dat")
+f_perisom_soma.ropen(soma_somatic30)               //("mig12_soma_somatic30_Ldiv12seg_ind.dat")
+
+ind_size_perisom_dend5=f_perisom_dend5.scanvar()
+f_perisom_dend5.scanvar()
+ind_size_perisom_dend=f_perisom_dend.scanvar()
+f_perisom_dend.scanvar()
+ind_size_perisom_soma=f_perisom_soma.scanvar()
+f_perisom_soma.scanvar()
+
+tot_ind_perisom_size=ind_size_perisom_dend5+ind_size_perisom_dend+ind_size_perisom_soma   //for perisomatic syn
+loc_ind_perisom_mat=new Matrix(tot_ind_perisom_size,2)
+
+///////prox dend syn
+strdef apic_rad, dend5_rad, dend_oriens
+sprint(apic_rad,"%s/mig12_apic_rad50-375_Ldiv12seg_ind.dat",folder_name)
+sprint(dend5_rad,"%s/mig12_dend5_rad50-375_Ldiv12seg_ind.dat",folder_name)
+sprint(dend_oriens,"%s/mig12_dend_oriens50_Ldiv12seg_ind.dat",folder_name)
+f_rad_apic.ropen(apic_rad)        //("mig12_apic_rad50-375_Ldiv12seg_ind.dat")
+f_rad_dend5.ropen(dend5_rad)      //("mig12_dend5_rad50-375_Ldiv12seg_ind.dat")
+f_oriens_dend.ropen(dend_oriens)  //("mig12_dend_oriens50_Ldiv12seg_ind.dat")
+
+ind_size_rad_apic=f_rad_apic.scanvar()
+f_rad_apic.scanvar()
+ind_size_rad_dend5=f_rad_dend5.scanvar()
+f_rad_dend5.scanvar()
+ind_size_oriens_dend=f_oriens_dend.scanvar()
+f_oriens_dend.scanvar()
+
+tot_ind_prox_size=ind_size_rad_apic+ind_size_rad_dend5+ind_size_oriens_dend   
+loc_ind_prox_mat=new Matrix(tot_ind_prox_size,2)
+
+
+////////for dist dend syn
+for i=0,tot_ind_distal_size-1{
+	f_distal_dend5.scanvar()
+	loc_ind_distal_mat.x[i][0]=f_distal_dend5.scanvar()
+	loc_ind_distal_mat.x[i][1]=f_distal_dend5.scanvar()
+}
+
+f_distal_dend5.close()
+
+/////////for perisomatic syn
+///////load in dend5 locs
+for i=0,ind_size_perisom_dend5-1{
+	f_perisom_dend5.scanvar()	
+	loc_ind_perisom_mat.x[i][0]=f_perisom_dend5.scanvar()
+	loc_ind_perisom_mat.x[i][1]=f_perisom_dend5.scanvar()
+}
+/////load in dend locs
+for i=ind_size_perisom_dend5,(ind_size_perisom_dend5+ind_size_perisom_dend-1){
+	f_perisom_dend.scanvar()
+	loc_ind_perisom_mat.x[i][0]=f_perisom_dend.scanvar()
+	loc_ind_perisom_mat.x[i][1]=f_perisom_dend.scanvar()
+}
+////load in somatic locs
+for i=ind_size_perisom_dend5+ind_size_perisom_dend,tot_ind_perisom_size-1{
+	f_perisom_soma.scanvar()
+	loc_ind_perisom_mat.x[i][0]=f_perisom_soma.scanvar()
+	loc_ind_perisom_mat.x[i][1]=f_perisom_soma.scanvar()
+}
+
+f_perisom_dend5.close()
+f_perisom_dend.close()
+f_perisom_soma.close()
+
+///////for prox syn
+/////load in apic locs (rad)
+for i=0,ind_size_rad_apic-1{
+	f_rad_apic.scanvar()	
+	loc_ind_prox_mat.x[i][0]=f_rad_apic.scanvar()
+	loc_ind_prox_mat.x[i][1]=f_rad_apic.scanvar()
+}
+/////load in dend5 locs (rad)
+for i=ind_size_rad_apic,(ind_size_rad_apic+ind_size_rad_dend5-1){
+	f_rad_dend5.scanvar()
+	loc_ind_prox_mat.x[i][0]=f_rad_dend5.scanvar()
+	loc_ind_prox_mat.x[i][1]=f_rad_dend5.scanvar()
+}
+////load in dend locs (oriens)
+for i=ind_size_rad_apic+ind_size_rad_dend5,tot_ind_prox_size-1{
+	f_oriens_dend.scanvar()
+	loc_ind_prox_mat.x[i][0]=f_oriens_dend.scanvar()
+	loc_ind_prox_mat.x[i][1]=f_oriens_dend.scanvar()
+}
+
+f_rad_apic.close()
+f_rad_dend5.close()
+f_oriens_dend.close()
+
+
+
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////EXC dend syn: I dont need to open any other file, just use the indexes already scanned that I need for ecx (basal+soma)
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+
+
+f_oriens_dend_exc.ropen("mig12_dend_oriens50_Ldiv12seg_ind.dat")
+ind_size_oriens_dend_exc=f_oriens_dend_exc.scanvar()
+f_oriens_dend_exc.scanvar()
+
+tot_ind_exc_size=ind_size_oriens_dend_exc
+loc_ind_exc_mat=new Matrix(tot_ind_exc_size,2)
+
+/////ADDED: for oriens excitation 
+////load in dend locs (oriens)
+for i=0,tot_ind_exc_size-1{
+	f_oriens_dend_exc.scanvar()
+	loc_ind_exc_mat.x[i][0]=f_oriens_dend_exc.scanvar()
+	loc_ind_exc_mat.x[i][1]=f_oriens_dend_exc.scanvar()
+}
+
+f_oriens_dend_exc.close()
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+///// connect presyn firing to postsyn cell 
+////choose location of postsyn by randomly selecting from list
+
+objref syn_pv, syn_bsc, syn_som, syn_exc, nc_pv, nc_bsc, nc_som, nc_exc
+objref sec_loc_pv, sec_loc_bsc, sec_loc_som, sec_loc_exc, seg_loc_pv, seg_loc_bsc, seg_loc_som, seg_loc_exc, seg_log_exc, sec_loc_type_pv, sec_loc_type_bsc, sec_loc_type_som, sec_loc_type_exc
+objref r_pv, r_bsc, r_som, r_exc
+objref reci
+
+//reci=new Vector()
+
+syn_pv=new List()
+syn_bsc=new List()
+syn_som=new List()
+syn_exc=new List()
+
+nc_pv=new List()
+nc_bsc=new List()
+nc_som=new List()
+nc_exc=new List()
+sec_loc_pv=new Vector()
+sec_loc_bsc=new Vector()
+sec_loc_som=new Vector()
+sec_loc_exc=new Vector()
+seg_loc_pv=new Vector()
+seg_loc_bsc=new Vector()
+seg_loc_som=new Vector()
+seg_loc_exc=new Vector()
+sec_loc_type_pv=new Vector()
+sec_loc_type_bsc=new Vector()
+sec_loc_type_som=new Vector()
+sec_loc_type_exc=new Vector()
+
+r_pv=new Random()
+r_bsc=new Random()
+r_som=new Random()
+r_exc=new Random()
+
+weight_pv_syn=0.00038 //0.00067 //0.00565 //0.00067 // 0.00038//0.00067 //0.00565 //0.00001
+weight_bsc_syn=0.00044 //0.00067 //0.002 //0.00067 // 0.00044 //0.00067 //0.00565
+weight_som_syn=0.00067 //0.00067 //0.00067 //0.00067 // 0.00067 //0.00565 //0.00067
+weight_exc_syn=0.00044 //equal to BiC weights
+
+//bsc_trise=1.0
+//bsc_tdecay=8.0
+
+/////for perisomatic pv synapses
+for i=0,num_presyn_pv_cells-1 {
+	rand_num_pv=r_pv.uniform(0,1)
+	loc_ind_pv=int(rand_num_pv*tot_ind_perisom_size)
+	sec_loc_pv.append(loc_ind_perisom_mat.x[loc_ind_pv][0])   //saves sec_loc in vector so can see where syn located
+	seg_loc_pv.append(loc_ind_perisom_mat.x[loc_ind_pv][1])   //saves seg_loc "" "" "" "" 
+	sec_loc_type_pv.append(loc_ind_pv)		    //saves loc_ind so can see if syn is on dend5, dend, or soma.  Depends on ind_size of each type (see if statements)
+	if (loc_ind_pv<=ind_size_perisom_dend5) {
+		dend_5[sec_loc_pv.get(i)] syn_pv.append(new Exp2Syn(seg_loc_pv.get(i))) 
+	} else if (loc_ind_pv>ind_size_perisom_dend5 && loc_ind_pv<=ind_size_perisom_dend5+ind_size_perisom_dend)  {
+		dend[sec_loc_pv.get(i)] syn_pv.append(new Exp2Syn(seg_loc_pv.get(i)))  
+	} else {
+		soma[sec_loc_pv.get(i)] syn_pv.append(new Exp2Syn(seg_loc_pv.get(i)))  
+	}
+	nc_pv.append(new NetCon(presyn_pv.o(i),syn_pv.o(i)))
+	nc_pv.o(i).weight=weight_pv_syn //0.00001 //0.0001 //0.0132
+	syn_pv.o(i).tau1=0.3  //from Bartos 02 supp: 0.3 +/- 0.02 ms
+	syn_pv.o(i).tau2=3.5  //from Bartos 02 supp: 3.5 +/- 0.5 ms
+	syn_pv.o(i).e=-85 // or 0 for symmetrical Cl//according to Bartos email correspondence, Ei=-40mV.  Used this for SEClamp runs to determine weight, but not for anything else
+}
+
+//reci.record(&syn_pv.i)
+
+/////for prox bsc synapses
+for i=0,num_presyn_bsc_cells-1 {
+	rand_num_bsc=r_bsc.uniform(0,1)
+	loc_ind_bsc=int(rand_num_bsc*tot_ind_prox_size)
+	sec_loc_bsc.append(loc_ind_prox_mat.x[loc_ind_bsc][0])   //saves sec_loc in vector so can see where syn located
+	seg_loc_bsc.append(loc_ind_prox_mat.x[loc_ind_bsc][1])   //saves seg_loc "" "" "" "" 
+	sec_loc_type_bsc.append(loc_ind_bsc)		    //saves loc_ind so can see if syn is on dend5, dend, or apic.  Depends on ind_size of each type (see if statements)
+	if (loc_ind_bsc<=ind_size_rad_apic) {
+		apic[sec_loc_bsc.get(i)] syn_bsc.append(new Exp2Syn(seg_loc_bsc.get(i))) 
+	} else if (loc_ind_bsc>ind_size_rad_apic && loc_ind_bsc<=ind_size_rad_apic+ind_size_rad_dend5)  {
+		dend_5[sec_loc_bsc.get(i)] syn_bsc.append(new Exp2Syn(seg_loc_bsc.get(i)))  
+	} else {
+		dend[sec_loc_bsc.get(i)] syn_bsc.append(new Exp2Syn(seg_loc_bsc.get(i)))  
+	}
+	nc_bsc.append(new NetCon(presyn_bsc.o(i),syn_bsc.o(i)))
+	nc_bsc.o(i).weight=weight_bsc_syn //0.00001 //0.0001 //0.0132
+	syn_bsc.o(i).tau1=2.0  //from Maccaferri 2000: 2.0 +/- 0.2 ms
+	syn_bsc.o(i).tau2=16.1  //from Maccaferri 2000: 16.1 +/- 1.1 ms
+	syn_bsc.o(i).e=-85 // or 0 for symmetrical Cl//according to Bartos email correspondence, Ei=-40mV.  Used this for SEClamp runs to determine weight, but not for anything else
+}
+
+///////for distal som synapses
+////// i go through all the cells i pich a random number that /////varies from my choices. section is the location
+//////
+
+
+for i=0,num_presyn_som_cells-1 {
+	rand_num_som=r_som.uniform(0,1)
+	loc_ind_som=int(rand_num_som*tot_ind_distal_size)
+	sec_loc_som.append(loc_ind_distal_mat.x[loc_ind_som][0])   //saves sec_loc in vector so can see where syn located
+	seg_loc_som.append(loc_ind_distal_mat.x[loc_ind_som][1])   //saves seg_loc "" "" "" "" 
+	sec_loc_type_som.append(loc_ind_som)		    //saves loc_ind
+	dend_5[sec_loc_som.get(i)] syn_som.append(new Exp2Syn(seg_loc_som.get(i)))   //for dist dend syn
+
+/////we make a netcon object that connects the presynaptic spike ///times that we read in from our fiule to the postysnaptic ///location which is now a synapse object
+	nc_som.append(new NetCon(presyn_som.o(i),syn_som.o(i)))
+	nc_som.o(i).weight=weight_som_syn  //0.00001 //0.0001 //0.0132
+	syn_som.o(i).tau1=3.5 //from Maccaferri 2000: 6.2 +/- 0.6 ms rec at soma
+	syn_som.o(i).tau2=11.8  //from Maccaferri 2000: 20.8 +/- 1.7 ms rec at soma
+	syn_som.o(i).e=-85 // or 0 for symmetrical Cl //according to Bartos email correspondence, Ei=-40mV.  Used this for SEClamp runs to determine weight, but not for anything else
+}
+
+
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+/////for oriens excitation synapses
+objref pyr_EPSCs, f_pyr, EPSC_vec, EPSC_tstep
+
+
+for i=0,num_presyn_exc_cells-1 {
+	rand_num_exc=r_exc.uniform(0,1)
+	loc_ind_exc=int(rand_num_exc*tot_ind_exc_size) // choosing random locations from dat file
+	sec_loc_exc.append(loc_ind_exc_mat.x[loc_ind_exc][0])   //saves sec_loc in vector so can see where syn located
+	seg_loc_exc.append(loc_ind_exc_mat.x[loc_ind_exc][1])   //saves seg_loc "" "" "" "" 
+	sec_loc_type_exc.append(loc_ind_exc)  //saves loc_ind so can see if syn is on dend5, dend, or apic.  Depends on ind_size of each type (see if statements)
+	dend[sec_loc_exc.get(i)] syn_exc.append(new Exp2Syn(seg_loc_exc.get(i)))  
+   
+        nc_exc.append(new NetCon(presyn_exc.o(i),syn_exc.o(i)))
+	nc_exc.o(i).weight=weight_exc_syn  //0.00001 //0.0001 //0.0132
+	syn_exc.o(i).tau1=0.5 //from Maccaferri 2000: 6.2 +/- 0.6 ms rec at soma
+	syn_exc.o(i).tau2=3  //from Maccaferri 2000: 20.8 +/- 1.7 ms rec at soma
+	syn_exc.o(i).e=-15 // or 0 for symmetrical Cl //according to Bartos email correspondence, Ei=-40mV.  Used this for SEClamp runs to determine weight, but not for anything else
+
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/////opens window and plots membrane potential
+
+//objectvar save_window_, rvp_
+//objectvar scene_vector_[8]
+//objectvar ocbox_, ocbox_list_, scene_, scene_list_
+//{ocbox_list_ = new List()  scene_list_ = new List()}
+
+//{
+//save_window_ = new Graph(0)  // creates but does not display a new Graph
+//  // so you can control its size and scaling before it is even drawn to the screen
+//save_window_.size(0,tstop,-100,-20)  // axis scaling
+//scene_vector_[5] = save_window_
+//{save_window_.view(0, -100, tstop, 80, 500, 66, 1200, 400)}  // draws it on the screen
+//  // in a window with user-specified location (5th and 6th args) and size (last 2 args)
+//graphList[0].append(save_window_)  // graphList[0] is for all graphs whose y values
+//  // are to be plotted vs. t
+//save_window_.save_name("graphList[1].")
+////save_window_.addexpr("v(.5)", 1, 1, 0.8, 0.9, 2)  // adds v(0.5) to this graph's plot list
+//  // also specifies line color and style, location where "v(.5)" will be printed
+
+//save_window_.addexpr("v(0.5)", 1, 1, 0.8, 0.9, 2) 
+//save_window_.label(0.01, 0.392971, "(mV)", 2, 1, 0, 0, 1)}  // just prints the
+//  // string "voltage axis" on the canvas at specified location, color etc.)
+
+
+////{
+////save_window_ = new Graph(0)
+////save_window_.size(0,1000,-50,50)  // axis scaling
+////scene_vector_[5] = save_window_
+////{save_window_.view(600, -50,100, 50, 500, 66, 1200, 400)}  // draws it on the screen
+////graphList[1].append(save_window_) 
+////save_window_.save_name("graphList[0].")
+//////save_window_.addexpr("pyr_EPSCs.i*1000", 1, 1, 0.8, 0.9, 2) 
+////save_window_.addexpr("clamp.i*1000", 1, 1, 0.8, 0.9, 2) 
+////save_window_.label(0.629393, 0.392971, "current axis", 2, 1, 0, 0, 1)}
+
+///////////////////////////
+///record v,t
+
+objref recv,rect,reci //,recIpas
+
+rect=new Vector()
+recv=new Vector()
+reci=new Vector()
+//recIPas=new Vector()
+
+recv.record(&v(0.5))///0.5 means from the centre of the ////compartment which refers to the soma as every compartment is ////devided from 0 to 1
+rect.record(&t)
+//reci.record(&clamp.i)
+
+// Soma/dend
+
+
+// Ipas
+//recIPas.record(&IPas(0.5))
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+run()
+
+///////////////////////////////
+//////save v,t
+
+objref savv,savt,savi
+
+savv=new File() // tracks only voltage
+//savt=new File() //this tracks time
+savi=new File() //this tracks current
+
+
+strdef filenamev, filenamet //, filenamei
+//sprint(filenamei,"LFP_BC380-BSC120-gi3-giSD1.5-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f-SOM467-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f_BCw%.5f_BSCw%.5f_SOMw%.5f_%d1EPSC_v.dat",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs,som_dSD,som_shift,som_gnSD,weight_pv_syn,weight_bsc_syn,weight_som_syn,EPSC_mult)
+//sprint(filenamet,"LFP_BC380-BSC120-gi3-giSD1.5-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f-SOM467-SOM12915016-dSD%.1fms-shift%.2fms-gnSD%.2f_BCw%.5f_BSCw%.5f_SOMw%.5f_%dEPSC_t.dat",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs,som_dSD,som_shift,som_gnSD,weight_pv_syn,weight_bsc_syn,weight_som_syn,EPSC_mult)
+
+sprint(filenamev,"LFP_BC380-BSC120-gi0-giSD0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f_BCw%.5f_BSCw%.5f_%dEPSC_v.dat",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs,weight_pv_syn,weight_bsc_syn,EPSC_mult)
+//sprint(filenamet,"LFP_BC380-BSC120-gi3-giSD1.5-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f_BCw%.5f_BSCw%.5f_%dEPSC_t.dat",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs,weight_pv_syn,weight_bsc_syn,EPSC_mult)
+//sprint(filenamei,"LFP_BC380-BSC120-gi0-giSD0-PV12913020-dSD%.1fms-gnSD%.2f-gpv%.1f-gsb%.1f-csb%.2f-gbs%.1f-cbs%.2f_BCw%.5f_BSCw%.5f_%dEPSC_v.dat",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs,weight_pv_syn,weight_bsc_syn,EPSC_mult)
+
+
+savv.wopen(filenamev)
+//savt.wopen(filenamet)
+//savi.wopen(filenamei)
+
+recv.printf(savv)
+//rect.printf(savt)
+//Ikleak_list.printf(savi)
+
+savv.close()
+//savt.close()
+//savi.close()
+
+
+
+
+
+
+
