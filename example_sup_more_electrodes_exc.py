@@ -142,24 +142,6 @@ def plot_ex3(cell, electrode):
     ax.set_ylabel('LFP 15')
     plt.locator_params(nbins=5)
 
-    #plot the LFP as image plot
-    # CHANGE: I changed it into electrode.x here instead of electrode.z that was before 
-    # ax = fig.add_axes([0.1, 0.1, 0.5, 0.2])
-    # absmaxLFP = abs(np.array([electrode.LFP.max(), electrode.LFP.min()])).max()
-    # im = ax.pcolormesh(cell.tvec, electrode.x, electrode.LFP,
-    #            vmax=absmaxLFP, vmin=-absmaxLFP,
-    #       cmap='spectral_r')
-    
-    # rect = np.array(ax.get_position().bounds)
-    # rect[0] += rect[2] + 0.01
-    # rect[2] = 0.02
-    # cax = fig.add_axes(rect)
-    # cbar = plt.colorbar(im, cax=cax)
-    # cbar.set_label('LFP (mV)')
-    # ax.axis(ax.axis('tight'))
-    # ax.set_xlabel('Time [ms]')
-    # ax.set_ylabel('z [$\mu$m]') 
-
 
     
     #plot the morphology, electrode contacts and synapses
