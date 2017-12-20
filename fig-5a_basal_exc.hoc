@@ -4,7 +4,7 @@ load_file("noload.hoc")
 
 strdef folder_name
 
-folder_name="/home/alexandrapierri/c_0.01_full_network_1875_spiketimes_matlab_hoc_dat_python_sh_files" 
+folder_name="/home/username/path/to/directory" 
 
 dist=1
 rel=0.1
@@ -13,13 +13,13 @@ numaxon=1
 numsoma=1 // number of compartments in each area
 numbasal=74
 numapical=42
-numtrunk=37// part of migliore code denotes the nimber of comp
+numtrunk=37// denotes the nimber of comp
 
 xopen("ri06.hoc")           // geometry file
 xopen("fixnseg.hoc")       //related to the geometry of the cell
 
-Rm = 20000 // membrsne resistance
-RmDend = Rm/1 //same
+Rm = 20000 // membrane resistance
+RmDend = Rm/1 //
 RmSoma = Rm
 RmAx = Rm
 
@@ -43,7 +43,7 @@ forsec "dend_5" {insert pas e_pas=Vrest g_pas = 1/RmDend Ra=RaAll cm=CmDend}
 forsec "apic" {insert pas e_pas=Vrest g_pas = 1/RmDend Ra=RaAll cm=CmDend}
 
 
-//Calculate Passive currents //added on March 10th 2016 to calculate the return currents of the model
+//Calculate Passive currents //
 //IPas = g_pas*(v - e_pas)
 
 
@@ -214,7 +214,7 @@ f_bsc.close()
 
 strdef filename
 
-// parameters aren't always saved with the same number of digits.  Have to read in correct value...
+// parameters aren't always saved with the same number of digits.  Have to read in correct value based on number of digits.
 if (gsb==0 || gsb%0.5==0) {
 	if (gbs==0 || gbs%0.5==0) {
 		if (cbs==0.16) {
@@ -294,7 +294,7 @@ f_exc.close()
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-////// import list of possible synaptic sites for each type (perisom, distal, prox) --- ADDED BASAL EXC
+////// import list of possible synaptic sites for each type (perisom, distal, prox) --- ADDED BASAL EXC for most runs
 
  
 objref f_perisom_dend5, f_perisom_dend, f_perisom_soma //for BC 
@@ -424,14 +424,6 @@ f_rad_dend5.close()
 f_oriens_dend.close()
 
 
-
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
-////EXC dend syn: I dont need to open any other file, just use the indexes already scanned that I need for ecx (basal+soma)
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-
-
 f_oriens_dend_exc.ropen("mig12_dend_oriens50_Ldiv12seg_ind.dat")
 ind_size_oriens_dend_exc=f_oriens_dend_exc.scanvar()
 f_oriens_dend_exc.scanvar()
@@ -545,7 +537,6 @@ for i=0,num_presyn_bsc_cells-1 {
 }
 
 ///////for distal som synapses
-////// i go through all the cells i pich a random number that /////varies from my choices. section is the location
 //////
 
 
