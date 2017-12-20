@@ -273,7 +273,7 @@ f_som.close()
 ////EXC
 
 strdef filename
-sprint(filename,"EXC-197-gi-0-gi_SD-0-PV12913020-dSD6.6ms-gnSD0.21-gpv3.0-gsb0.5-csb0.21-gbs1.75-cbs0.1344-spiketimes.txt",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
+sprint(filename,"EXC-197-csb0.21-cbs0.1344-spiketimes.txt",pv_dSD,pv_gnSD,gpv,gsb,csb,gbs,cbs)
 f_exc.ropen(filename)
 tot_num_exc_spks=f_exc.scanvar() 
 num_presyn_exc_cells=f_exc.scanvar()
