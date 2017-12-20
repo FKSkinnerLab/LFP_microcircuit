@@ -1,4 +1,4 @@
-function [P,PK]=basal_exc_make_pwrspec(Vlfp); %,fignum); 
+function [P,PK]=make_selected_networks_basal_exc(Vlfp); %,fignum); 
 
 % ESTIMATION OF POLARITY. THIS FUNCTION DOESN'T CALCULATE EXACT AMPLITUDE
 % IT ONLY CALCULATES POLARITY AS FINDPEAKS CAN BE INACCURATE FOR NEGATIVE
