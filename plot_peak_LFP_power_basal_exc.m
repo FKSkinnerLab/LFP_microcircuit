@@ -3,16 +3,10 @@ function [gsb,gbs,max_freq,max_pwr]=plot_LFP_power(csb);
 gsb=[0:0.25:6]'*ones(1,25);
 gbs=((0:0.25:6)'*ones(1,25))';
 tot_time=5; %total time of simulation in seconds
-%cbs=0.1344
+
 csb=0.01;
 cbs=csb*0.64;
 
-% f = load('many_electrodes_LFP_power_only_gsb=0.00_gbs=3.00_csb=0.21.mat');
-% lfp_data= f.electrodes;
-% V=var(lfp_data,0,2);
-% m=mean(lfp_data);
-% display (V)
-% plot (V); hold on
 
 for i=1:25
     for j=1:25
@@ -20,30 +14,11 @@ for i=1:25
         gbs_temp=gbs(1,j);
 
     filename_v = load(['basal_exc_many_electrodes_LFP_power_only_gsb=' num2str(gsb_temp, '% 10.2f') '_gbs=' num2str(gbs_temp,'% 10.2f') '_csb=0.01.mat']);
-    
-        
-%            checkfile=exist(filename_v);
-%         if checkfile~=0
-%             fid=fopen(filename_v);          
-%             v=textscan(filename_v,'%f');           
-%             fclose(filename_v);
+
             [max_var_temp, max_pwr_value_temp]=amake_real_pwrspec_basal_exc(filename_v,tot_time); % edw kalei thn make pwr spec apo to allo arxeio
-            
-            %max_freq(i,j)=max_freq_temp;
-            %max_pwr(i,j)=max_pwr_temp;
-            %av_pwr(i,j)=av_pwr_temp;
-            
-            
-%             max_var(i,j)=max_var_temp;
+
             max_pwr_value(i,j)=max_pwr_value_temp;
            
-%         else
-%             %convert this to a warning or error.
-%             disp(['Could not open file'  filename_v]);
-%             %disp(['OS returned this message: ' message]);
-%             max_freq(i,j)=-10;    
-%             max_pwr(i,j)=0;
-%         end
     end
 end
 
@@ -54,12 +29,7 @@ save(filename,'gsb','gbs','csb','cbs','max_pwr_value');
 
 
  figure(1); clf;
-%  plot(freq,pwr);
-%  hold on;
-%  xlim([0 30]);
-%  xlabel('Frequency (Hz)','fontsize',16),
-% title_string = sprintf('max power=%.4f',max_pwr);
-% title(title_string, 'fontsize',16);
+
 
 surf(gsb,gbs,max_pwr_value); view(0,90); %shading interp;
 xlabel('SOM-BiC conductance (nS)','fontsize',16);
