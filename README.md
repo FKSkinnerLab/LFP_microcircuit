@@ -31,6 +31,3 @@ for a chosen connection probability (csb) value.
 
 To decompose the LFP selectively eliminate OLM -PYR or PV-PYR connections within the fig-5a_basal_exc.hoc and repeat steps 2-5. 
 
-
-the spatial attentuation is computed LFPy: 
-the CSD : cite. 
