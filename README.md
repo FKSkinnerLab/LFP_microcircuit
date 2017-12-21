@@ -18,8 +18,8 @@ Requirements:
 
 Simulation process:
 
-1. Run the: testfig5_basal_exc_more_electrodes.py 
-for a chosen connection probability (csb) value. 
+1. Run the: testfig5_basal_exc_more_electrodes.py /
+for a chosen connection probability (csb) value. /
           * record from soma only 
           * record across pyramidal cell axis using multiple electrodes.          
 2. To simulate polarity in the soma run: plot_LFP_polarity.
