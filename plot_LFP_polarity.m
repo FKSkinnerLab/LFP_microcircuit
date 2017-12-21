@@ -11,16 +11,10 @@ for i=1:25
     for j=1:25
         gsb_temp=gsb(i,1);
         gbs_temp=gbs(1,j);
-        %filename_v=(['LFP_BC380-BSC120-gi3-giSD1.5-PV12913020-dSD6.6ms-gnSD0.21-gpv3.0-gsb' num2str(gsb_temp,'% 10.1f') '-csb0.06-gbs' num2str(gbs_temp,'%10.1f') '-cbs0.04-SOM467-SOM12915016-dSD3.5ms-shift5.32ms-gnSD0.12_BCw0.00067_BSCw0.00067_SOMw0.00067_0EPSC_Srise1.75_Sdecay5.9_v.dat']);
-        %filename_v=(['LFP_BC380-BSC120-gi3-giSD1.5-PV12913020-dSD6.6ms-gnSD0.21-gpv3.0-gsb' num2str(gsb_temp,'% 10.1f') '-csb0.06-gbs' num2str(gbs_temp,'%10.1f') '-cbs0.04-SOM467-SOM12915016-dSD3.5ms-shift5.32ms-gnSD0.12_BCw0.00067_BSCw0.00067_SOMw0.00067_0EPSC_BSCPrise1.0_BSCPdecay8.0_v.dat']);
-
-% for the somatic potential
-    %filename_v=(['LFP_BC380-BSC120-gi3-giSD1.5-PV12913020-dSD6.6ms-gnSD0.21-gpv3.0-gsb' num2str(gsb_temp,'% 10.1f') '-csb' num2str(csb,'% 10.2f') '-gbs' num2str(gbs_temp,'%10.1f') '-cbs' num2str(cbs,'% 10.4f') '-SOM467-SOM12915016-dSD3.5ms-shift5.32ms-gnSD0.12_BCw0.00067_BSCw0.00067_SOMw0.00067_0EPSC_Srise1.75_Sdecay5.9_v.dat']); %BCw0.00038_BSCw0.00044_SOMw0.00067   BSCrise1.0_BSCdecay8.0
 
     filename_v = (['somatic_LFP_power_only_gsb=' num2str(gsb_temp, '% 10.2f') '_gbs=' num2str(gbs_temp,'% 10.2f') '_csb=0.19.txt']);
 
-    %somatic_LFP_power_only_gsb-0.75_gbs-0.75_csb-0.21.txt]);
-        
+       
            checkfile=exist(filename_v);
         if checkfile~=0
             fid=fopen(filename_v);
@@ -46,8 +40,6 @@ save(filename,'gsb','gbs','csb','cbs','max_freq');
 
 figure(1);clf;
 
-%% In the following line I made replaced "max_freq" with "av" for average peak value April 22 2016
-%%surf(gsb,gbs,max_freq);view(0,90);shading interp;
 
 surf(gsb,gbs,av_pwr);view(0,90);%shading interp;
 xlabel('SOM-BSC conductance (nS)','fontsize',16);
