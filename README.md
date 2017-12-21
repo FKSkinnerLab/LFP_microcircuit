@@ -9,16 +9,11 @@ Contact: Alexandra Chatzikalymniou - alexandra.chatzikalymniou@mail.utoronto.ca
 
 Requirements:
 
-NEURON 7.4/7.5
-
-python 2.7/3 or earlier version
-
-numpy 
-
-scipy 
-
-matplotlib  
-
+NEURON 7.4/7.5, 
+python 2.7/3 or earlier version,
+numpy, 
+scipy, 
+matplotlib,  
 Lfpy 1.1.3
 
 Simulation process:
