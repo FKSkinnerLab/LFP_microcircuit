@@ -1,7 +1,7 @@
 # LFP_microcircuit
 
 "Deciphering the contribution of oriens-lacunosum/moleculare (OLM) cells
-to intrinsic theta rhythms using biophysical local field potential (LFP) computations". 
+to intrinsic theta rhythms using biophysical local field potential (LFP) models". 
 
 citation: TBA
 License: TBA
