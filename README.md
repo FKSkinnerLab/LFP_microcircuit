@@ -18,8 +18,18 @@ Requirements:
 
 Simulation process:
 
-1. Run the: testfig5_basal_exc_more_electrodes.py 
-for a chosen connection probability (csb) value. 
+1. Download the spike times for a given set of connection probability (csb) with the full range of synaptic conductance values (gsb,gbs) from OSF (osf.io/vw3jh). Then run the following scripts for the chosen set of connection probability. 
+
+Here we have provided the complete repository for the connection probability c=0.21 and explain how to re-produce Figures in the paper. We explain how the repository needs to be mofified to work for the rest of connection probabilities.
+         a. change the direcotry path within the fig file. 
+         b. rename the EXP to include the right csb.
+
+
+Simulation steps for csb=0.21
+
+1. Run the: testfig5_basal_exc_more_electrodes.py followed by the chosen connection probability (csb) value and the synaptic conductance values (gsb and gbs) as arguemnts. 
+For example run: python testfig5_basal_exc_more_electrodes.py 0.21 0.00 0.00
+and obtain the laminal LFPs for every parameter value as pdf and mat files. 
 
           * record from soma only 
           * record across pyramidal cell axis using multiple electrodes.          
