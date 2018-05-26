@@ -34,6 +34,7 @@ and obtain the laminal LFPs for every parameter value as pdf and mat files.
           * record from soma only 
           * record across pyramidal cell axis using multiple electrodes.          
 
+Once the mat files are available:
 2. To simulate polarity in the soma run: plot_LFP_polarity.
 3. To simulate the selected/rejected regimes for a given connection probability run: plot_selected_networks_basal_exc.m 
 4. To simulate the peak power of the LFP run: plot_peak_LFP_power_basal_exc.m
