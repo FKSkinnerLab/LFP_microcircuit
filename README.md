@@ -17,18 +17,18 @@ Simulation process:
 
 Here we have provided the neccessary code to reproduce the Figures in the manuscript.
 
-We provide the complete repository for the connection probability c=0.21 including all interneuron spike times and and explain how to re-produce Figures in the  manuscript.  
+We provide the complete repository for the connection probability c=0.21 including all interneuron spike times and explain how to reproduce the Figures in the  manuscript.  
 
 Simulation steps for csb=0.21
 
-1. To reproduce the polarity profile as in Figure 2A(iii) execute the "testfig.py" followed by the aguments of connection probabilty (csb) and synaptic conductances (gsb, gbs). For example run: "python testfig.py 0.21 0.00 0.00".
-Once testfig.py is executed for all gsb and gbs values run "plot_LFP_power.m" to simulate the polarity color plot of Figure 2A(iii).  
+1. Execute the "testfig.py" followed by the aguments of connection probabilty (csb) and synaptic conductances (gsb, gbs) to reproduce the polarity profile as in Figure 2A(iii). For example run: "python testfig.py 0.21 0.00 0.00".
+Once testfig.py is executed for all gsb and gbs values run "plot_LFP_power.m" to simulate the polarity color plot as in Figure 2A(iii).  
 
-2. To reproduce selected versus rejected regimes as in Figure 6, run the "testfig5_basal_exc_more_electrodes.py" followed by the arguemnts of csb, gsb and gbs. Once iterated across all gsb amd gbs run "basal_exc_plot_laminar_LFP_power.m" to obtain the color plot of selected and rejected regimes as in Figure 6.
+2. Run the "testfig5_basal_exc_more_electrodes.py" followed by the arguemnts of csb, gsb and gbs to reproduce selected versus rejected regimes as in Figure 6. Once iterated across all gsb amd gbs run "basal_exc_plot_laminar_LFP_power.m" to obtain the color plot of selected and rejected regimes as in Figure 6.
 
 Execute the "aplot_LFP_real_power_basal_exc.m" to generate the power plot of Figure 7A. 
 
-To simulate the laminar power as in Figure run: plot_laminar_LFP_power_basal_exc.m
+Run: "plot_laminar_LFP_power_basal_exc.m" to simulate the laminar power as in Figure 11.
 
 Notes:
 In the "example_sup_more_electrodes_exc.py" you have the option to choose the number and location of electrodes to record from.
