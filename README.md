@@ -17,7 +17,7 @@ Simulation process:
 
 Here we provide the neccessary code required to reproduce the Figures in the manuscript.
 
-We provide the complete repository for the connection probability c=0.21 including all interneuron spike times. Interneuorn spike times for the ret of the connection porbabilites can be found in osf (osf.io/vw3jh).
+We provide the complete repository for the connection probability csb=0.21 including all interneuron spike times. Interneuorn spike times for the rest of the connection porbabilites can be found in OSF (osf.io/vw3jh).
 
 Simulation steps for csb=0.21
 
