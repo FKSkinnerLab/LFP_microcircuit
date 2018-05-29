@@ -34,14 +34,14 @@ To simulate the polarity color plot as in Figure 2A(iii) run "plot_LFP_power.m" 
 
 Notes:
 a. In the "example_sup_more_electrodes_exc.py" you have the option to choose the number and location of electrodes to record from.
-b. To decompose the LFP selectively eliminate OLM -PYR or PV-PYR connections within the fig-5a_basal_exc.hoc and repeat steps. 
+b. To decompose the LFP selectively eliminate OLM -PYR or PV-PYR connections within the "fig-5a_basal_exc.hoc" and repeat steps. 
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-To use the code for the rest of the connections probabilities follow these steps:
+To simulate results for the rest of the connections probabilities follow the steps:
 
 1. Download the spike times for a given set of connection probability (csb) with the full range of synaptic conductance values (gsb,gbs) from OSF (osf.io/vw3jh). Then run the following scripts for the chosen set of connection probability (csb). 
 
-2. in line 6 in "fig-5a_basal_exc.hoc" change the path to the local directory containing the spike times of the connection                                          probability of choice. 
+2. in line 6 in "fig-5a_basal_exc.hoc" in line 6, change the path to the local directory containing the spike times of the connection probability of choice. 
 
 
