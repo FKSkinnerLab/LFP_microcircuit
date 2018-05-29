@@ -15,7 +15,7 @@ Requirements:
 
 Simulation process:
 
-Here we provide the neccessary code to reproduce the Figures in the manuscript.
+Here we provide the neccessary code required to reproduce the Figures in the manuscript.
 
 We provide the complete repository for the connection probability c=0.21 including all interneuron spike times. Interneuorn spike times for the ret of the connection porbabilites can be found in osf (osf.io/vw3jh).
 
