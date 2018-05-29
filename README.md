@@ -33,8 +33,8 @@ To simulate the polarity color plot as in Figure 2A(iii) run "plot_LFP_power.m" 
 5. To simulate the 2D LFP as in Figure 12 run: "testfig5_basal_exc_more_electrodes.py"
 
 Notes:
-  a. In the "example_sup_more_electrodes_exc.py" you have the option to choose the number and location of electrodes to record from.
-  b. To decompose the LFP selectively eliminate OLM -PYR or PV-PYR connections within the "fig-5a_basal_exc.hoc" and repeat steps. 
+1. In the "example_sup_more_electrodes_exc.py" you have the option to choose the number and location of electrodes to record from.
+2. To decompose the LFP selectively eliminate OLM -PYR or PV-PYR connections within the "fig-5a_basal_exc.hoc" and repeat steps. 
 
 ------------------------------------------------------------------------------------------------------------------------------
 
