@@ -22,9 +22,9 @@ We provide the complete repository for the connection probability csb=0.21 inclu
 Simulation steps for csb=0.21
 
 1. To simulate somatic LFP traces without basal excitation as in Figure 2A and B run: "testfig.py" followed by the aguments of connection probabilty (csb) and synaptic conductances (gsb, gbs). For example run: "python testfig.py 0.21 0.00 0.00".
-To simulate the polarity color plot as in Figure 2A(iii) run "plot_LFP_power.m" after "testfig.py" is executed across all gsb and gbs values.  
+To simulate the polarity color plot as in Figure 2A(iii) run "plot_LFP_polarity.m" after "testfig.py" is executed across all gsb and gbs values.  
 
-2. To simulate selected versus rejected regimes as in Figure 6 first run: "testfig5_basal_exc_more_electrodes.py" followed by the arguemnts csb, gsb and gbs. Once iterated across all gsb amd gbs run "basal_exc_plot_laminar_LFP_power.m" to obtain the color plot of selected and rejected regimes as in Figure 6.
+2. To simulate selected versus rejected regimes as in Figure 6 first run: "testfig5_basal_exc_more_electrodes.py" followed by the arguemnts csb, gsb and gbs. Once iterated across all gsb amd gbs run "plot_selected_networks_basal_exc.m" to obtain the color plot of selected and rejected regimes as in Figure 6.
 
 3. To simulate the power plot of Figure 7A run: "aplot_LFP_real_power_basal_exc.m". 
 
